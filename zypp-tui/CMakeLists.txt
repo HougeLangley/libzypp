@@ -77,8 +77,10 @@ if ( ZYPP_CXX_CLANG_TIDY OR ZYPP_CXX_CPPCHECK )
   endif(ZYPP_CXX_CPPCHECK)
 endif( ZYPP_CXX_CLANG_TIDY OR ZYPP_CXX_CPPCHECK )
 
-ADD_LIBRARY( zypp-tui SHARED ${zypp_SRCS} ${zypp_HEADERS} )
-add_dependencies( zypp-tui zypp-core )
+add_library(objlib OBJECT ${zypp_SRCS})
+set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
+add_library(zypp-tui-static STATIC $<TARGET_OBJECTS:objlib>)
+add_library(zypp-tui-shared SHARED $<TARGET_OBJECTS:objlib>)
 
 ADD_LIBRARY( zypp-tui STATIC ${zypp_SRCS} ${zypp_HEADERS} )
 add_dependencies( zypp-tui zypp-core )
@@ -90,7 +92,8 @@ target_link_libraries( zypp-tui INTERFACE ${READLINE_LIBRARY})
 target_include_directories( zypp-tui PUBLIC ${READLINE_INCLUDE_DIR})
 # target_compile_options( zypp-tui PUBLIC ${READLINE_CFLAGS_OTHER})
 
-INSTALL(TARGETS zypp-tui LIBRARY DESTINATION ${LIB_INSTALL_DIR} )
+INSTALL(TARGETS zypp-tui-static ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+INSTALL(TARGETS zypp-tui-shared LIBRARY DESTINATION ${LIB_INSTALL_DIR} )
 
 # utils/text.* utils/console.* utils/colors.* utils/ansi.h output/Utf8.h output/AliveCursor.h utils/richtext.* output/Out.* output/OutNormal.* Table.*
 # -> move config for colors to zypp-tui
