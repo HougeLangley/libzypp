@@ -64,6 +64,9 @@ SET ( zypp_SRCS
   ${zypp_tui_SRCS}
 )
 
+set(CMAKE_CXX_VISIBILITY_PRESET "default")
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
 if ( ZYPP_CXX_CLANG_TIDY OR ZYPP_CXX_CPPCHECK )
   if (ZYPP_CXX_CLANG_TIDY)
     set( CMAKE_CXX_CLANG_TIDY ${ZYPP_CXX_CLANG_TIDY} )
@@ -73,6 +76,9 @@ if ( ZYPP_CXX_CLANG_TIDY OR ZYPP_CXX_CPPCHECK )
     set(CMAKE_CXX_CPPCHECK ${ZYPP_CXX_CPPCHECK})
   endif(ZYPP_CXX_CPPCHECK)
 endif( ZYPP_CXX_CLANG_TIDY OR ZYPP_CXX_CPPCHECK )
+
+ADD_LIBRARY( zypp-tui SHARED ${zypp_SRCS} ${zypp_HEADERS} )
+add_dependencies( zypp-tui zypp-core )
 
 ADD_LIBRARY( zypp-tui STATIC ${zypp_SRCS} ${zypp_HEADERS} )
 add_dependencies( zypp-tui zypp-core )
@@ -84,7 +90,7 @@ target_link_libraries( zypp-tui INTERFACE ${READLINE_LIBRARY})
 target_include_directories( zypp-tui PUBLIC ${READLINE_INCLUDE_DIR})
 # target_compile_options( zypp-tui PUBLIC ${READLINE_CFLAGS_OTHER})
 
-INSTALL(TARGETS zypp-tui ARCHIVE DESTINATION ${LIB_INSTALL_DIR} )
+INSTALL(TARGETS zypp-tui LIBRARY DESTINATION ${LIB_INSTALL_DIR} )
 
 # utils/text.* utils/console.* utils/colors.* utils/ansi.h output/Utf8.h output/AliveCursor.h utils/richtext.* output/Out.* output/OutNormal.* Table.*
 # -> move config for colors to zypp-tui
